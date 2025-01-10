@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Чат</h1>
+<form method="POST" action="/add_comment">
+    <div class="mb-3">
+        <label for="username" class="form-label">Ваше ім'я</label>
+        <input type="text" name="username" id="username" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="content" class="form-label">Коментар</label>
+        <textarea name="content" id="content" class="form-control" rows="3" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Надіслати</button>
+</form>
+<hr>
+<ul class="list-group">
+    {% for comment in comments %}
+        <li class="list-group-item">
+            <strong>{{ comment[1] }}</strong>: {{ comment[2] }}
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

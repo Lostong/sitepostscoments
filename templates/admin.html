@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Адмін-панель</h1>
+<form method="POST">
+    <div class="mb-3">
+        <label for="password" class="form-label">Пароль</label>
+        <input type="password" name="password" id="password" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label for="comment_id" class="form-label">ID коментаря для видалення</label>
+        <input type="number" name="comment_id" id="comment_id" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-danger">Видалити</button>
+</form>
+<hr>
+<ul class="list-group">
+    {% for comment in comments %}
+        <li class="list-group-item">
+            <strong>ID {{ comment[0] }} - {{ comment[1] }}</strong>: {{ comment[2] }}
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
