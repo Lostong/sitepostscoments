@@ -1,42 +1,79 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-from db import init_db, add_comment, get_comments, delete_comment
-import time
+from flask import Flask, jsonify
+from flask_restful import Api, Resource, reqparse
+from flask_cors import CORS
+from flask_swagger_ui import get_swaggerui_blueprint
+from db_connection import get_db_connection, get_all_comments, get_comments, limit, delete, update, create
+import random
+
 
 app = Flask(__name__)
+api = Api(app)
+CORS(app)
+
+class comments(Resource):
+    def get(self, id=0):
+        if id == 0:
+            count_of_records = limit()
+            comments = get_comments(random.randint(1, count_of_records))
+            comments_json = raw_to_json(comments)
+            return comments_json
+        comments = get_comments(id)
+        if comments:
+            comments_json = raw_to_json(comments)
+            return comments_json
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("text")
+        parser.add_argument("description")
+
+        params = parser.parse_args()
+        answer = create(params["text"], params["description"])
+        json_data = jsonify(f"Records create with id {answer}")
+        json_data.status_code = 201
+        return json_data
+
+    def put(self, id):
+        parser = reqparse.RequestParser()
+        parser.add_argument("text")
+        parser.add_argument("description")
+
+        params = parser.parse_args()
+        update(id, params["text"], params["description"])
+        json_data = jsonify(f"Records edit with id {id}")
+        json_data.status_code = 202
+        return json_data
+
+    def delete(self, id):
+        delete(id)
+        json_data = jsonify(f"Records deleted with id {id}")
+        json_data.status_code = 200
+        return json_data
 
 
-@app.route("/")
-def home():
-    return render_template("home.html")
+def raw_to_json(comments):
+
+    return {"id": comments["id"],
+"text": comments["text"],
+"description": comments["description"]
+}
 
 
-@app.route("/add_comment", methods=["POST"])
-def add_comment_route():
-    username = request.form.get("username")
-    content = request.form.get("content")
-    if username and content:
-        add_comment(username, content)
-    return "", 204
 
 
-@app.route("/get_comments", methods=["GET"])
-def get_comments_route():
-    comments = get_comments()
-    return jsonify(comments)
+SWAGGER_URL = "/swagger/"
+API_URL = "/static/swagger.json"
 
-@app.route("/admin", methods=["GET", "POST"])
-def admin():
-    if request.method == "POST":
-        password = request.form.get("password")
-        if password == "Nazarka":
-            comment_id = request.form.get("comment_id")
-            if comment_id:
-                delete_comment(comment_id)
-        else:
-            return "Невірний пароль!", 403
-    comments = get_comments()
-    return render_template("admin.html", comments=comments)
+swagger_ui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': 'Comments API'
+    }
+)
+app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
+
+api.add_resource(comments, "/api/v1.0/comments/", "/api/v1.0/comments/<int:id>")
 
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True)

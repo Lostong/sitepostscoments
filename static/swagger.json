@@ -1,0 +1,137 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Comments API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1.0/comments": {
+      "get": {
+        "description": "Returns all comments",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      },
+      "post": {
+        "description": "Create a new comment",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Add a new comment",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Comment successfully created"
+          }
+        }
+      }
+    },
+    "/api/v1.0/comments/{id}": {
+      "get": {
+        "description": "Returns a comment by ID",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of comment to return",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      },
+      "delete": {
+        "description": "Delete a comment by ID",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of comment to delete",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment successfully deleted"
+          }
+        }
+      },
+      "put": {
+        "description": "Update a comment by ID",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of comment to update",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Updated comment object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment successfully updated"
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Comment": {
+      "type": "object",
+      "required": [
+        "text",
+        "description"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "example": "Це приклад тексту коментаря"
+        },
+        "description": {
+          "type": "string",
+          "example": "Детальний опис коментаря"
+        }
+      }
+    }
+  }
+}
